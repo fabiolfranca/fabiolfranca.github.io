@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fabio França · Dados & Análise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080c10;
+  --surface: #0f1520;
+  --surface2: #161e2e;
+  --border: rgba(255,255,255,0.07);
+  --accent: #ffffff;
+  --accent2: #c4c4c4;
+  --text: #e8edf5;
+  --muted: #64748b;
+  --green: #10b981;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Monaco', monospace;
+  font-size: 16px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* NOISE TEXTURE */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* GRID BG */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 0 2rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(8,12,16,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  font-family: 'Monaco', monospace;
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover { color: var(--text); }
+
+/* HERO */
+.hero {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 6rem 2rem 4rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.hero-glow {
+  position: absolute;
+  top: 20%;
+  left: -10%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-content { max-width: 680px; }
+
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(59,130,246,0.1);
+  border: 1px solid rgba(59,130,246,0.2);
+  border-radius: 99px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  color: var(--accent);
+  font-weight: 500;
+  margin-bottom: 2rem;
+  letter-spacing: 0.03em;
+}
+
+.hero-tag::before {
+  content: '';
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2.8rem, 6vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.5rem;
+}
+
+.hero h1 span {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: 1.1rem;
+  color: var(--muted);
+  max-width: 520px;
+  margin-bottom: 2.5rem;
+  line-height: 1.8;
+  font-weight: 300;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent);
+  color: #000000;
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--text);
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  border: 1px solid var(--border);
+}
+
+.btn-outline:hover {
+  border-color: rgba(255,255,255,0.2);
+  background: var(--surface);
+}
+
+/* HERO PHOTO CARD */
+.hero-card {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 320px;
+}
+
+@media (max-width: 900px) {
+  .hero-card { display: none; }
+  .hero-content { max-width: 100%; }
+}
+
+.photo-frame {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  margin: 0 auto 1.5rem;
+  position: relative;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  padding: 3px;
+}
+
+.photo-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: var(--accent);
+  overflow: hidden;
+}
+
+.photo-inner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.stat-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+}
+
+.stat-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-label {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+/* SECTIONS */
+section {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 5rem 2rem;
+}
+
+.section-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.75rem;
+}
+
+.section-title {
+  font-family: 'Fantasy', monospace;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+.section-sub {
+  color: var(--muted);
+  font-size: 1rem;
+  max-width: 540px;
+  font-weight: 300;
+  margin-bottom: 3rem;
+}
+
+/* SOBRE */
+.sobre-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .sobre-grid { grid-template-columns: 1fr; }
+}
+
+.sobre-text p {
+  color: var(--muted);
+  margin-bottom: 1.2rem;
+  font-weight: 300;
+  font-size: 1rem;
+}
+
+.sobre-text p strong { color: var(--text); font-weight: 500; }
+
+.sobre-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fact-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  transition: border-color 0.2s;
+}
+
+.fact-card:hover { border-color: rgba(59,130,246,0.3); }
+
+.fact-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: rgba(59,130,246,0.1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.fact-title { font-weight: 500; font-size: 0.9rem; margin-bottom: 2px; }
+.fact-desc { font-size: 0.8rem; color: var(--muted); }
+
+/* PROJETOS */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.project-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.project-card:hover {
+  border-color: rgba(59,130,246,0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+
+.project-thumb {
+  height: 180px;
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+
+.project-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s;
+}
+
+.project-card:hover .project-thumb img { transform: scale(1.04); }
+
+.thumb-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.thumb-icon {
+  width: 56px; height: 56px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem;
+}
+
+.project-body { padding: 20px; }
+
+.project-tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 99px;
+  margin-bottom: 10px;
+}
+
+.tag-bi { background: rgba(59,130,246,0.15); color: #60a5fa; }
+.tag-ml { background: rgba(16,185,129,0.15); color: #34d399; }
+.tag-auto { background: rgba(245,158,11,0.15); color: #fbbf24; }
+.tag-full { background: rgba(168,85,247,0.15); color: #c084fc; }
+
+.project-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.project-desc {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 14px;
+  font-weight: 300;
+}
+
+.project-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tool-pill {
+  font-size: 0.7rem;
+  padding: 3px 9px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  color: var(--muted);
+}
+
+/* SKILLS */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.skill-group {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  transition: border-color 0.2s;
+}
+
+.skill-group:hover { border-color: rgba(59,130,246,0.25); }
+
+.skill-group-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.skill-item {
+  margin-bottom: 14px;
+}
+
+.skill-item:last-child { margin-bottom: 0; }
+
+.skill-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.skill-name { font-size: 0.82rem; font-weight: 400; }
+
+.skill-pct {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.bar-bg {
+  height: 4px;
+  background: var(--surface2);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  animation: barIn 1.2s ease forwards;
+  transform-origin: left;
+}
+
+@keyframes barIn {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* CONTATO */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .contact-grid { grid-template-columns: 1fr; }
+}
+
+.contact-text p {
+  color: var(--muted);
+  font-weight: 300;
+  margin-bottom: 1rem;
+}
+
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.2s;
+}
+
+.contact-link:hover {
+  border-color: rgba(59,130,246,0.3);
+  background: var(--surface2);
+}
+
+.contact-link-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: rgba(59,130,246,0.1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.contact-link-info strong {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.contact-link-info span {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* DIVIDER */
+.section-divider {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.divider-line {
+  height: 1px;
+  background: var(--border);
+}
+
+/* FOOTER */
+footer {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 2rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+}
+
+/* FADE IN */
+.fade-up {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">FF</div>
+  <ul class="nav-links">
+    <li><a href="#sobre">Sobre</a></li>
+    <li><a href="#projetos">Projetos</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contato">Contato</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div style="position:relative; overflow:hidden;">
+  <div class="hero-glow"></div>
+  <div class="hero">
+    <div class="hero-content fade-up">
+      <div class="hero-tag">Disponível para oportunidades</div>
+      <h1>Fabio França<br><span>Dados que geram decisão.</span></h1>
+      <p class="hero-sub">
+        Analista de dados. Transformo dados em
+        painéis, automações e modelos que as pessoas realmente usam.
+      </p>
+      <div class="hero-actions">
+        <a href="#projetos" class="btn-primary">Ver projetos →</a>
+        <a href="mailto:fabio.luizdefranca@hotmail.com" class="btn-outline">Entre em contato</a>
+      </div>
+    </div>
+
+    <div class="hero-card fade-up" style="transition-delay:0.2s">
+      <div class="photo-frame">
+        <div class="photo-inner">
+            <img src = "assets/img/fabio.jpeg" alt="Fabio França">
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-val">+4</div>
+          <div class="stat-label">BIs rodando em produção</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">+20</div>
+          <div class="stat-label">KPIs Desenvolvidos</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">+2</div>
+          <div class="stat-label">Projetos Pessoais com ML</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">2</div>
+          <div class="stat-label">empresas do setor automotivo</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section-divider"><div class="divider-line"></div></div>
+
+<!-- SOBRE -->
+<section id="sobre">
+  <div class="section-tag">Sobre mim</div>
+  <h2 class="section-title">21 anos, Votorantim — SP.</h2>
+  <div class="sobre-grid fade-up">
+    <div class="sobre-text">
+      <p>Sou estudante de <strong>Ciência de Dados para Negócios</strong> na FATEC Votorantim e estagiário de Análise de Dados na <strong>Frasle Mobility</strong>, empresa global do setor automotivo.</p>
+      <p>Em 6 meses, construí +4 produtos de BI em produção para públicos diferentes — da diretoria da planta aos planejadores do PCM — integrando dados do <strong>SAP</strong> com Python e Power BI.</p>
+      <p>Também desenvolvi um <strong>robô de extração automática</strong> de consumo de energia elétrica e um sistema de projeção linear que eliminou um processo manual recorrente.</p>
+      <p>Meu objetivo é atuar como <strong>Cientista de Dados</strong> em empresas de impacto, com foco em agronegócio, indústria e Setor bancário.</p>
+    </div>
+    <div class="sobre-facts">
+      <div class="fact-card">
+        <div class="fact-icon">🏭</div>
+        <div>
+          <div class="fact-title">Frasle Mobility — Estagiário de Dados</div>
+          <div class="fact-desc">Jan 2026 – atual · Análise de dados industrial, BI para diretoria, automação com Python</div>
+        </div>
+      </div>
+      <div class="fact-card">
+        <div class="fact-icon">🚗</div>
+        <div>
+          <div class="fact-title">Gestamp — Aprendiz Logística/Dados</div>
+          <div class="fact-desc">Abr – Out 2025 · SAP, relatórios diários, BI de notas fiscais</div>
+        </div>
+      </div>
+      <div class="fact-card">
+        <div class="fact-icon">🎓</div>
+        <div>
+          <div class="fact-title">FATEC Votorantim — CDN</div>
+          <div class="fact-desc">2025 – cursando · Ciência de Dados para Negócios</div>
+        </div>
+      </div>
+      <div class="fact-card">
+        <div class="fact-icon">🌍</div>
+        <div>
+          <div class="fact-title">Inglês Intermediário · B1</div>
+          <div class="fact-desc">Leitura técnica fluente · documentações e artigos em inglês no dia a dia</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"><div class="divider-line"></div></div>
+
+<!-- PROJETOS -->
+<section id="projetos">
+  <div class="section-tag">Portfólio</div>
+  <h2 class="section-title">Projetos & Entregas</h2>
+  <p class="section-sub">Do ambiente industrial à experimentação em ML — cada projeto resolve um problema real.</p>
+
+  <div class="projects-grid fade-up">
+
+    <div class="project-card">
+      <div class="project-thumb">
+        <img src="assets/img/conf_proces.PNG" alt="BI de Operação Autônoma">
+      </div>
+      <div class="project-body">
+        <span class="project-tag tag-bi">Power BI · Produção</span>
+        <div class="project-title">BI de Operação Autônoma — Frasle Mobility</div>
+        <p class="project-desc">28 páginas com KPIs operacionais (notas urgentes, proativas, canceladas, serviços liberados) entregue mensalmente à diretora da planta como parte do RDM.</p>
+        <div class="project-tools">
+          <span class="tool-pill">Power BI</span>
+          <span class="tool-pill">SAP</span>
+          <span class="tool-pill">DAX</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-thumb">
+        <img src="assets/img/energia.PNG" alt="Monitoramento de Energia">
+      </div>
+      <div class="project-body">
+        <span class="project-tag tag-auto">Automação · Python</span>
+        <div class="project-title">Sistema de Monitoramento de Energia com Projeção Linear</div>
+        <p class="project-desc">Robô em Python que extrai automaticamente o consumo de energia elétrica diário do portal da fornecedora, alimentando um BI com aba de projeção linear de consumo futuro.</p>
+        <div class="project-tools">
+          <span class="tool-pill">Python</span>
+          <span class="tool-pill">Web Scraping</span>
+          <span class="tool-pill">Power BI</span>
+          <span class="tool-pill">Estatística</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-thumb">
+        <img src="assets/img/planejamento.PNG" alt="Calendário de Ordens">
+      </div>
+      <div class="project-body">
+        <span class="project-tag tag-full">BI · Planejamento</span>
+        <div class="project-title">Painel de Execução PCM — Calendário de Ordens</div>
+        <p class="project-desc">Dashboard com calendário de agendamento de ordens de serviço integrado ao SAP, com status visual por cor. Usado diariamente pelos planejadores do PCM para controle do fluxo de manutenção.</p>
+        <div class="project-tools">
+          <span class="tool-pill">Power BI</span>
+          <span class="tool-pill">SAP PM</span>
+          <span class="tool-pill">DAX</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-thumb">
+        <img src="assets/img/projeto_sales.PNG" alt="Regressão Linear">
+      </div>
+      <div class="project-body">
+        <span class="project-tag tag-ml">Machine Learning</span>
+        <div class="project-title">Previsão de Vendas com Regressão Linear</div>
+        <p class="project-desc">Modelo de ML para prever vendas com base em investimentos em TV, rádio e jornal. R²=0.899. Insight principal: rádio tem maior impacto por unidade investida que TV, mesmo com correlação menor.</p>
+        <div class="project-tools">
+          <span class="tool-pill">Python</span>
+          <span class="tool-pill">scikit-learn</span>
+          <span class="tool-pill">pandas</span>
+          <span class="tool-pill">Jupyter</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-thumb">
+        <img src="assets/img/Treinamentos.PNG" alt="Treinamentos Obrigatórios">
+      </div>
+      <div class="project-body">
+        <span class="project-tag tag-bi">Power BI · RH</span>
+        <div class="project-title">Painel de Treinamentos Obrigatórios</div>
+        <p class="project-desc">BI com foto individual de cada mantenedor e status de treinamentos obrigatórios (NRs). Desenvolvido por iniciativa própria após ver um post do líder no LinkedIn — entregue sem ele pedir.</p>
+        <div class="project-tools">
+          <span class="tool-pill">Power BI</span>
+          <span class="tool-pill">DAX</span>
+          <span class="tool-pill">UX de dados</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card" style="border: 1px dashed rgba(59,130,246,0.3);">
+      <div class="project-thumb" style="background: rgba(59,130,246,0.04);">
+        <img src="assets/img/pcm.PNG" alt="Follow Up">
+      </div>
+         <div class="project-body">
+        <span class="project-tag tag-ml">Power BI · Follow Up</span>
+        <div class="project-title">Painel de Follow Up</div>
+        <p class="project-desc">Dashboard para acompanhar ordens, notas e horas apontadas de cada manutentor.</p>
+        <div class="project-tools">
+          <span class="tool-pill">Power BI</span>
+          <span class="tool-pill">SAP</span>
+          <span class="tool-pill">DAX</span>
+        </div>
+      </div>
+    </div>
+
+     <div class="project-card" style="border: 1px dashed rgba(59,130,246,0.3);">
+      <div class="project-thumb" style="background: rgba(59,130,246,0.04);">
+        <img src="assets/img/chatbot.PNG" alt="ChatBot Local">
+      </div>
+         <div class="project-body">
+        <span class="project-tag tag-ml">ChatBot Local · LLM</span>
+        <div class="project-title">ChatBot Local</div>
+        <p class="project-desc">ChatBot Desenvolvido com LangChain e Mistral Ollama, com interface grafica e respostas geradas por IA local</p>
+        <div class="project-tools">
+          <span class="tool-pill">Python</span>
+          <span class="tool-pill">LLM</span>
+          <span class="tool-pill">Ollama</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="section-divider"><div class="divider-line"></div></div>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-tag">Ferramentas & Conhecimento</div>
+  <h2 class="section-title">Skills</h2>
+  <p class="section-sub">Stack focada em dados industriais, visualização e automação.</p>
+
+  <div class="skills-grid fade-up">
+
+    <div class="skill-group">
+      <div class="skill-group-title">📊 Visualização & BI</div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">Power BI</span><span class="skill-pct">90%</span></div>
+        <div class="bar-bg"><div class="bar-fill" style="width:90%"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">DAX & modelagem</span><span class="skill-pct">80%</span></div>
+        <div class="bar-bg"><div class="bar-fill" style="width:80%"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">Excel avançado</span><span class="skill-pct">70%</span></div>
+        <div class="bar-bg"><div class="bar-fill" style="width:70%"></div></div>
+      </div>
+    </div>
+
+    <div class="skill-group">
+      <div class="skill-group-title">🐍 Linguagens & Dados</div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">Python</span><span class="skill-pct">65%</span></div>
+        <div class="bar-bg"><div class="bar-fill" style="width:65%"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">SQL</span><span class="skill-pct">40%</span></div>
+        <div class="bar-bg"><div class="bar-fill" style="width:40%"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">Machine Learning básico</span><span class="skill-pct">35%</span></div>
+        <div class="bar-bg"><div class="bar-fill" style="width:35%"></div></div>
+      </div>
+    </div>
+
+    <div class="skill-group">
+      <div class="skill-group-title">🏭 Indústria & ERP</div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">SAP</span><span class="skill-pct">85%</span></div>
+        <div class="bar-bg"><div class="bar-fill" style="width:85%"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">Dados operacionais</span><span class="skill-pct">80%</span></div>
+        <div class="bar-bg"><div class="bar-fill" style="width:80%"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">Automação de relatórios</span><span class="skill-pct">75%</span></div>
+        <div class="bar-bg"><div class="bar-fill" style="width:75%"></div></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="section-divider"><div class="divider-line"></div></div>
+
+<!-- CONTATO -->
+<section id="contato">
+  <div class="section-tag">Vamos conversar</div>
+  <h2 class="section-title">Contato</h2>
+  <div class="contact-grid fade-up">
+    <div class="contact-text">
+      <p>Estou aberto a oportunidades em análise de dados, BI e ciência de dados — especialmente no setor industrial e agronegócio.</p>
+      <p>Sou de Votorantim/SP e topo presencial, híbrido ou remoto. Também toparia me mudar para uma oportunidade certa.</p>
+      <a href="mailto:fabio.luizdefranca@hotmail.com" class="btn-primary" style="margin-top:1rem; display:inline-flex;">Mandar e-mail →</a>
+    </div>
+    <div class="contact-links">
+      <a href="https://www.linkedin.com/in/fabio-franca-data/" target="_blank" class="contact-link">
+        <div class="contact-link-icon">💼</div>
+        <div class="contact-link-info">
+          <strong>LinkedIn</strong>
+          <span>linkedin.com/in/fabio-franca-data</span>
+        </div>
+      </a>
+      <a href="https://github.com/fabiolfranca" target="_blank" class="contact-link">
+        <div class="contact-link-icon">🐙</div>
+        <div class="contact-link-info">
+          <strong>GitHub</strong>
+          <span>github.com/fabiolfranca</span>
+        </div>
+      </a>
+      <a href="tel:+5515997685046" class="contact-link">
+        <div class="contact-link-icon">📱</div>
+        <div class="contact-link-info">
+          <strong>WhatsApp / Telefone</strong>
+          <span>(15) 99768-5046</span>
+        </div>
+      </a>
+      <a href="mailto:fabio.luizdefranca@hotmail.com" class="contact-link">
+        <div class="contact-link-icon">✉️</div>
+        <div class="contact-link-info">
+          <strong>E-mail</strong>
+          <span>fabio.luizdefranca@hotmail.com</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Feito com dados e café · Fabio França © 2026
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+document.querySelectorAll('.project-card').forEach((card, i) => {
+  card.style.transitionDelay = (i * 0.08) + 's';
+  card.classList.add('fade-up');
+  observer.observe(card);
+});
+
+document.querySelectorAll('.skill-group').forEach((el, i) => {
+  el.style.transitionDelay = (i * 0.1) + 's';
+  el.classList.add('fade-up');
+  observer.observe(el);
+});
+</script>
+
+</body>
+</html>
